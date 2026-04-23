@@ -1,5 +1,4 @@
-## DoS Attack on Liquidity Withdrawals During Market Volatility#163 Status
-
+## DoS Attack on Liquidity Withdrawals During Market Volatility
 
 
 ## Summary
