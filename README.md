@@ -1,14 +1,6 @@
-DoS Attack on Liquidity Withdrawals During Market Volatility#163 Status
+## DoS Attack on Liquidity Withdrawals During Market Volatility#163 Status
 
-Confirmed Severity
 
-Severity: Informational ≈
-
-Likelihood: Medium ×
-
-Impact: High evyy evyy 28
-
-· created on Jun 4, 2025 at 08:05·Edited
 
 ## Summary
 Attackers can exploit market volatility periods to perform cost-effective partial DoS attacks, preventing liquidity providers from withdrawing funds during market crashes. This results in significant financial losses as users cannot exit positions at optimal prices and may face forced liquidations.
