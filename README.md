@@ -1,100 +1,96 @@
-DoS Attack on Liquidity Withdrawals During Market Volatility#163
-Status
+DoS Attack on Liquidity Withdrawals During Market Volatility#163 Status
 
-Confirmed
-Severity
 
-Severity: Informational
-≈
 
-Likelihood: Medium
-×
+Summary Attackers can exploit market volatility periods to perform cost-effective partial DoS attacks, preventing liquidity providers from withdrawing funds during market crashes. This results in significant financial losses as users cannot exit positions at optimal prices and may face forced liquidations.
 
-Impact: High
-evyy
-evyy
-28
-
-·
-created on Jun 4, 2025 at 08:05·Edited
-
-Summary
-Attackers can exploit market volatility periods to perform cost-effective partial DoS attacks, preventing liquidity providers from withdrawing funds during market crashes. This results in significant financial losses as users cannot exit positions at optimal prices and may face forced liquidations.
-
-Finding Description
-The protocol's liquidity supply mechanism contains a critical vulnerability that allows sophisticated attackers to time DoS attacks during high-volatility market events, specifically targeting the withdrawal functionality when users most need liquidity access.
+Finding Description The protocol's liquidity supply mechanism contains a critical vulnerability that allows sophisticated attackers to time DoS attacks during high-volatility market events, specifically targeting the withdrawal functionality when users most need liquidity access.
 
 Attack Vector:)
 
 Users supply liquidity through the supply function using APTOS and SUI tokens.
 
+```rust
 public entry fun supply(
-        account: &signer,
-        asset: address,
-        amount: u256,
-        on_behalf_of: address,
-        referral_code: u16
-       )
+    account: &signer,
+    asset: address,
+    amount: u256,
+    on_behalf_of: address,
+    referral_code: u16
+)
+```
+
 The system validates reserves are not paused/frozen
-assert!(!is_paused, error_config::get_ereserve_paused())
-        assert!(!is_frozen, error_config::get_ereserve_frozen())
+
+```rust
+assert!(!is_paused, error_config::get_ereserve_paused());
+assert!(!is_frozen, error_config::get_ereserve_frozen());
+```
+
 During market crashes, when users panic and attempt mass withdrawals, attackers execute partial DoS attacks Despite Aptos claiming 150k TPS capacity, real-world performance shows:)
 
 Peak: 32k TPS Average: 12k TPS it is not highly cost expensive.
 
 Users cannot access the withdraw function during critical market periods
 
+```rust
 public entry fun withdraw(
-        account: &signer,
-        asset: address,
-        amount: u256,
-        to: address
+    account: &signer,
+    asset: address,
+    amount: u256,
+    to: address
+)
+```
+
 Market crash triggers user panic → Mass withdrawal attempts → DoS attack execution to withdraw function → Failed withdrawals → Forced holding during price decline → Additional liquidations via
 
+```rust
 public entry fun set_user_use_reserve_as_collateral(
-        account: &signer, asset: address, use_as_collateral: bool
-    ) {
+    account: &signer,
+    asset: address,
+    use_as_collateral: bool
+) {
+    validation_logic::validate_hf_and_ltv(
+        &user_config_map,
+        asset,
+        account_address,
+        reserves_count,
+        user_emode_category,
+        emode_ltv,
+        emode_liq_threshold
+    );
+}
+```
 
-        
-          validation_logic::validate_hf_and_ltv(
-                &user_config_map,
-                asset,
-                account_address,
-                reserves_count,
-                user_emode_category,
-                emode_ltv,
-                emode_liq_threshold
-            );
-  
- 
- 
-    public fun validate_health_factor(
-        user_config_map: &UserConfigurationMap,
-        user: address,
-        user_emode_category: u8,
-        reserves_count: u256,
-        emode_ltv: u256,
-        emode_liq_threshold: u256
-    ): (u256, bool) {
-        let (_, _, _, _, health_factor, has_zero_ltv_collateral) =
-            generic_logic::calculate_user_account_data(
-                user_config_map,
-                reserves_count,
-                user,
-                user_emode_category,
-                emode_ltv,
-                emode_liq_threshold
-            );
-
-        assert!(
-            health_factor >= user_config::get_health_factor_liquidation_threshold(),
-            error_config::get_ehealth_factor_lower_than_liquidation_threshold()
+```rust
+public fun validate_health_factor(
+    user_config_map: &UserConfigurationMap,
+    user: address,
+    user_emode_category: u8,
+    reserves_count: u256,
+    emode_ltv: u256,
+    emode_liq_threshold: u256
+): (u256, bool) {
+    let (_, _, _, _, health_factor, has_zero_ltv_collateral) =
+        generic_logic::calculate_user_account_data(
+            user_config_map,
+            reserves_count,
+            user,
+            user_emode_category,
+            emode_ltv,
+            emode_liq_threshold
         );
 
-        (health_factor, has_zero_ltv_collateral)
-    }
-when threshold goes below 1e18 (its  divergent Loss to another users).
-Pre-crash APTOS price: $17.00 USD
+    assert!(
+        health_factor >= user_config::get_health_factor_liquidation_threshold(),
+        error_config::get_ehealth_factor_lower_than_liquidation_threshold()
+    );
+
+    (health_factor, has_zero_ltv_collateral)
+}
+```
+
+when threshold goes below 1e18 (its divergent Loss to another users). Pre-crash APTOS price: $17.00 USD
 
 Target withdrawal price: $13.10-13.99 USD
 
@@ -114,8 +110,7 @@ Temporary Disruption or DoS: A bug that leads to temporary downtime or a denial 
 
 Issues with significant constraints, such as capital requirement, previous planning, or actions by other users
 
-Impact Explanation
-Liquidity providers unable to exit positions
+Impact Explanation Liquidity providers unable to exit positions
 
 Arbitrage traders are still in loss
 
@@ -123,8 +118,7 @@ MEV bots are still in loss
 
 Users facing forced liquidations due to health_factor threshold breaches less than 1e18. (divergent Loss)
 
-Likelihood Explanation
-Crypto market crashes are cyclical and identifiable:)
+Likelihood Explanation Crypto market crashes are cyclical and identifiable:)
 
 Real TPS limitations make DoS attacks feasible and cost-effective:) with advanced move scripts.
 
@@ -134,8 +128,7 @@ Partial DoS requires significantly less capital than full network DoS.
 
 Panic selling during crashes creates predictable mass withdrawal patterns:)
 
-Proof of Concept
-simple demonstration:) liquidity Provider deposits: 1,000 APTOS tokens
+Proof of Concept simple demonstration:) liquidity Provider deposits: 1,000 APTOS tokens
 
 Initial APTOS price: $17.00 USD
 
@@ -201,9 +194,4 @@ Opportunity cost: $13,500 - $5,500 = $8,000
 
 Total effective loss: $11,500 (67.6% of original investment)
 
-Monitor market conditions for volatility indicators
-Position attack infrastructure during normal market conditions
-Detect market crash initiation (price drop >10% in <1 hour)
-Execute partial DoS attack targeting withdrawal functions
-Maintain attack during peak panic withdrawal period (2-6 hours)
-Release DoS after optimal profit extraction during Divergent Loss.
+Monitor market conditions for volatility indicators Position attack infrastructure during normal market conditions Detect market crash initiation (price drop >10% in <1 hour) Execute partial DoS attack targeting withdrawal functions Maintain attack during peak panic withdrawal period (2-6 hours) Release DoS after optimal profit extraction during Divergent Loss.
