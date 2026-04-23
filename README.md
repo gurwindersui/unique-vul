@@ -1,10 +1,20 @@
 DoS Attack on Liquidity Withdrawals During Market Volatility#163 Status
 
+Confirmed Severity
 
+Severity: Informational ≈
 
-Summary Attackers can exploit market volatility periods to perform cost-effective partial DoS attacks, preventing liquidity providers from withdrawing funds during market crashes. This results in significant financial losses as users cannot exit positions at optimal prices and may face forced liquidations.
+Likelihood: Medium ×
 
-Finding Description The protocol's liquidity supply mechanism contains a critical vulnerability that allows sophisticated attackers to time DoS attacks during high-volatility market events, specifically targeting the withdrawal functionality when users most need liquidity access.
+Impact: High evyy evyy 28
+
+· created on Jun 4, 2025 at 08:05·Edited
+
+## Summary
+Attackers can exploit market volatility periods to perform cost-effective partial DoS attacks, preventing liquidity providers from withdrawing funds during market crashes. This results in significant financial losses as users cannot exit positions at optimal prices and may face forced liquidations.
+
+## Finding Description
+The protocol's liquidity supply mechanism contains a critical vulnerability that allows sophisticated attackers to time DoS attacks during high-volatility market events, specifically targeting the withdrawal functionality when users most need liquidity access.
 
 Attack Vector:)
 
@@ -110,7 +120,8 @@ Temporary Disruption or DoS: A bug that leads to temporary downtime or a denial 
 
 Issues with significant constraints, such as capital requirement, previous planning, or actions by other users
 
-Impact Explanation Liquidity providers unable to exit positions
+## Impact Explanation
+Liquidity providers unable to exit positions
 
 Arbitrage traders are still in loss
 
@@ -118,7 +129,8 @@ MEV bots are still in loss
 
 Users facing forced liquidations due to health_factor threshold breaches less than 1e18. (divergent Loss)
 
-Likelihood Explanation Crypto market crashes are cyclical and identifiable:)
+## Likelihood Explanation
+Crypto market crashes are cyclical and identifiable:)
 
 Real TPS limitations make DoS attacks feasible and cost-effective:) with advanced move scripts.
 
@@ -128,7 +140,8 @@ Partial DoS requires significantly less capital than full network DoS.
 
 Panic selling during crashes creates predictable mass withdrawal patterns:)
 
-Proof of Concept simple demonstration:) liquidity Provider deposits: 1,000 APTOS tokens
+## Proof of Concept
+simple demonstration:) liquidity Provider deposits: 1,000 APTOS tokens
 
 Initial APTOS price: $17.00 USD
 
